@@ -33,9 +33,9 @@ jobs:
         id: changed-vis
         run: |
           cd pr
-          CHANGED_VIS=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} -- '*.vi' || true)
+          CHANGED_VIS=$(git diff --name-only --diff-filter=ACMR ${{ github.event.pull_request.base.sha }} ${{ github.sha }} || true)
           if [ -z "$CHANGED_VIS" ]; then
-            echo "No .vi files changed."
+            echo "No changed files detected."
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           else
             echo "Changed VI files:"
@@ -78,7 +78,6 @@ jobs:
           mkdir -p metadata
           echo "${{ github.event.pull_request.number }}" > metadata/pr_number
           echo "linux" > metadata/platform
-          echo "${{ steps.changed-vis.outputs.vi_files }}" > metadata/vi_files
 
       - name: Upload metadata
         if: steps.changed-vis.outputs.has_changes == 'true'

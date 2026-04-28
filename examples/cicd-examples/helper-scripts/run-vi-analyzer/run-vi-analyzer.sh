@@ -18,12 +18,13 @@ echo "ReportPath: $REPORT_PATH"
 echo " "
 
 # Run the LabVIEWCLI VIA command.
+CLI_EXIT=0
 LabVIEWCLI -LogToConsole TRUE \
 -OperationName RunVIAnalyzer \
 -ConfigPath $CONFIG_FILE \
 -ReportPath $REPORT_PATH \
 -LabVIEWPath $LABVIEW_PATH \
--Headless
+-Headless || CLI_EXIT=$?
 
 echo "Done running of VI Analyzer Tests"
 echo "Printing Results..."
@@ -46,6 +47,11 @@ if ! [[ "$FAILED_COUNT" =~ ^[0-9]+$ ]]; then
 fi
 
 echo "Number of failed tests: $FAILED_COUNT"
+
+# Copy report to workspace for artifact upload
+RESULTS_DIR='/workspace/examples/cicd-examples/Test-VIs/via-results-temp'
+mkdir -p "$RESULTS_DIR"
+cp "$REPORT_PATH" "$RESULTS_DIR/Results.txt" 2>/dev/null || true
 
 # 4) Exit based on count
 if (( FAILED_COUNT > 0 )); then
